@@ -25,6 +25,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * 百度登录
+ * 登录流程：
+ * prepare->check->login
+ *               ->login->sendSms->loginWithSmsCode
+ * 由于极大几率遇到短信验证码，所以第一种case基本很难遇到
+ *
+ * TODO
+ * 没有必要在后台完成请求登录
+ * 考虑到安全性（隐私）和效率，可以将登录过程完全移动至前端
+ * 服务端只持久化登录成功后的BDUSS-cookie
+ *
  * Created by wudj on 2017/9/28.
  */
 @RequestMapping("/baidu")

@@ -139,8 +139,8 @@ public class Constants {
     }
 
 
-    private static String byteToString(byte[] bByte) {
-        StringBuffer sBuffer = new StringBuffer();
+    public static String byteToString(byte[] bByte) {
+        StringBuilder sBuffer = new StringBuilder();
 
         for(int i = 0; i < bByte.length; ++i) {
             sBuffer.append(byteToArrayString(bByte[i]));

@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.atpexgo.tiebasign.util.common.Constants.byteToString;
+
 /**
  * Created by wudj on 2017/9/28.
  */
@@ -39,38 +41,39 @@ public class SignService {
 
         CloseableHttpClient client = getClient("bdtb for Android 7.9.2");
         //login
-        String tbs = login(client,bduss);
+        String tbs = login(client, bduss);
 
         //get forum
         List<NameValuePair> getForumParams = new ArrayList<>();
-        getForumParams.add(new BasicNameValuePair("BDUSS",bduss));
-        getForumParams.add(new BasicNameValuePair("_client_id","wappc_1506582322531_89"));
-        getForumParams.add(new BasicNameValuePair("_client_type","2"));
-        getForumParams.add(new BasicNameValuePair("_client_version","7.9.2"));
-        getForumParams.add(new BasicNameValuePair("_phone_imei","030020030096050"));
-        getForumParams.add(new BasicNameValuePair("from","mini_baidu_appstore"));
-        getForumParams.add(new BasicNameValuePair("like_forum","1"));
-        getForumParams.add(new BasicNameValuePair("recommend","0"));
-        getForumParams.add(new BasicNameValuePair("timestamp",String.valueOf(System.currentTimeMillis())));
-        getForumParams.add(new BasicNameValuePair("topic","0"));
+        getForumParams.add(new BasicNameValuePair("BDUSS", bduss));
+        getForumParams.add(new BasicNameValuePair("_client_id", "wappc_1506582322531_89"));
+        getForumParams.add(new BasicNameValuePair("_client_type", "2"));
+        getForumParams.add(new BasicNameValuePair("_client_version", "7.9.2"));
+        getForumParams.add(new BasicNameValuePair("_phone_imei", "030020030096050"));
+        getForumParams.add(new BasicNameValuePair("from", "mini_baidu_appstore"));
+        getForumParams.add(new BasicNameValuePair("like_forum", "1"));
+        getForumParams.add(new BasicNameValuePair("recommend", "0"));
+        getForumParams.add(new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())));
+        getForumParams.add(new BasicNameValuePair("topic", "0"));
 
-        String postData = getForumParams.stream().map(nameValuePair -> nameValuePair.getName()+"="+nameValuePair.getValue()).collect(StringBuilder::new,StringBuilder::append,StringBuilder::append).toString();
+        String postData = getForumParams.stream().map(nameValuePair -> nameValuePair.getName() + "=" + nameValuePair.getValue()).collect(StringBuilder::new, StringBuilder::append, StringBuilder::append).toString();
 
-        NameValuePair sig = new BasicNameValuePair("sign",getSign(postData));getForumParams.add(sig);
-        HttpUriRequest request = getPostRequest("http://c.tieba.baidu.com/c/f/forum/forumrecommend",getForumParams);
+        NameValuePair sig = new BasicNameValuePair("sign", getSign(postData));
+        getForumParams.add(sig);
+        HttpUriRequest request = getPostRequest("http://c.tieba.baidu.com/c/f/forum/forumrecommend", getForumParams);
 
-        String resp = getContent("UTF-8",client.execute(request));
+        String resp = getContent("UTF-8", client.execute(request));
 
         JSONObject respJson = JSONObject.parseObject(resp);
         JSONArray likeForums = respJson.getJSONArray("like_forum");
 
-        for(int i = 0;i<likeForums.size();i++){
+        for (int i = 0; i < likeForums.size(); i++) {
             try {
                 JSONObject likeforumJson = (JSONObject) likeForums.get(i);
                 String name = likeforumJson.getString("forum_name");
                 String id = likeforumJson.getString("forum_id");
                 String level = likeforumJson.getString("level_id");
-                log.info("开始签到{},贴吧id{},当前等级:{}",name,id,level);
+                log.info("开始签到{},贴吧id{},当前等级:{}", name, id, level);
 //
 //                List<NameValuePair> pageParams = new ArrayList<>();
 //                pageParams.add(new BasicNameValuePair("BDUSS",bduss));
@@ -100,70 +103,71 @@ public class SignService {
 //                    JSONObject anti = pageRespJson.getJSONObject("anti");
 //                    String tbs = anti.getString("tbs");
 
-                    List<NameValuePair> signParams = new ArrayList<>();
-                    signParams.add(new BasicNameValuePair("BDUSS", bduss));
-                    signParams.add(new BasicNameValuePair("_client_id", "wappc_1506582322531_89"));
-                    signParams.add(new BasicNameValuePair("_client_type", "2"));
-                    signParams.add(new BasicNameValuePair("_client_version", "7.9.2"));
-                    signParams.add(new BasicNameValuePair("_phone_imei", "030020030096050"));
+                List<NameValuePair> signParams = new ArrayList<>();
+                signParams.add(new BasicNameValuePair("BDUSS", bduss));
+                signParams.add(new BasicNameValuePair("_client_id", "wappc_1506582322531_89"));
+                signParams.add(new BasicNameValuePair("_client_type", "2"));
+                signParams.add(new BasicNameValuePair("_client_version", "7.9.2"));
+                signParams.add(new BasicNameValuePair("_phone_imei", "030020030096050"));
 //                    signParams.add(new BasicNameValuePair("fid", id));
-                    signParams.add(new BasicNameValuePair("from", "mini_baidu_appstore"));
-                    NameValuePair kw = new BasicNameValuePair("kw", name);
-                    signParams.add(kw);
-                    NameValuePair _tbs = new BasicNameValuePair("tbs", tbs);
-                    signParams.add(_tbs);
-                    NameValuePair tsp = new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis()));
-                    signParams.add(tsp);
-                    NameValuePair signn = new BasicNameValuePair("sign", getSign(signParams.stream().map(nameValuePair -> nameValuePair.getName() + "="+nameValuePair.getValue()).collect(StringBuilder::new, StringBuilder::append, StringBuilder::append).toString()));
-                    signParams.add(signn);
+                signParams.add(new BasicNameValuePair("from", "mini_baidu_appstore"));
+                NameValuePair kw = new BasicNameValuePair("kw", name);
+                signParams.add(kw);
+                NameValuePair _tbs = new BasicNameValuePair("tbs", tbs);
+                signParams.add(_tbs);
+                NameValuePair tsp = new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis()));
+                signParams.add(tsp);
+                NameValuePair signn = new BasicNameValuePair("sign", getSign(signParams.stream().map(nameValuePair -> nameValuePair.getName() + "=" + nameValuePair.getValue()).collect(StringBuilder::new, StringBuilder::append, StringBuilder::append).toString()));
+                signParams.add(signn);
 
-                    HttpUriRequest signRequest = getPostRequest("http://c.tieba.baidu.com/c/c/forum/sign", signParams);
-                    String sigResp = getContent("UTF-8", client.execute(signRequest));
-                    JSONObject sigRespJson = JSONObject.parseObject(sigResp);
-                    if ("0".equals(sigRespJson.getString("error_code"))) {
-                        log.info("{} 签到成功",name);
-                    }else if("160002".equals(sigRespJson.getString("error_code"))){
-                        log.info("{} 已经签到",name);
-                    }
+                HttpUriRequest signRequest = getPostRequest("http://c.tieba.baidu.com/c/c/forum/sign", signParams);
+                String sigResp = getContent("UTF-8", client.execute(signRequest));
+                JSONObject sigRespJson = JSONObject.parseObject(sigResp);
+                if ("0".equals(sigRespJson.getString("error_code"))) {
+                    log.info("{} 签到成功", name);
+                } else if ("160002".equals(sigRespJson.getString("error_code"))) {
+                    log.info("{} 已经签到", name);
+                }
 //                }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("出错了", e);
             }
         }
         return new HashMap();
     }
 
 
-    private String login(CloseableHttpClient client,String bduss) throws IOException, NoSuchAlgorithmException {
+    private String login(CloseableHttpClient client, String bduss) throws IOException, NoSuchAlgorithmException {
         List<NameValuePair> loginParams = new ArrayList<>();
-        loginParams.add(new BasicNameValuePair("_client_id","wappc_1506582322531_89"));
-        loginParams.add(new BasicNameValuePair("_client_type","2"));
-        loginParams.add(new BasicNameValuePair("_client_version","7.9.2"));
-        loginParams.add(new BasicNameValuePair("_phone_imei","030020030096050"));
-        loginParams.add(new BasicNameValuePair("bdusstoken",bduss+"|"));
-        loginParams.add(new BasicNameValuePair("channel_id",""));
-        loginParams.add(new BasicNameValuePair("channel_uid",""));
-        loginParams.add(new BasicNameValuePair("from","mini_baidu_appstore"));
+        loginParams.add(new BasicNameValuePair("_client_id", "wappc_1506582322531_89"));
+        loginParams.add(new BasicNameValuePair("_client_type", "2"));
+        loginParams.add(new BasicNameValuePair("_client_version", "7.9.2"));
+        loginParams.add(new BasicNameValuePair("_phone_imei", "030020030096050"));
+        loginParams.add(new BasicNameValuePair("bdusstoken", bduss + "|"));
+        loginParams.add(new BasicNameValuePair("channel_id", ""));
+        loginParams.add(new BasicNameValuePair("channel_uid", ""));
+        loginParams.add(new BasicNameValuePair("from", "mini_baidu_appstore"));
         loginParams.add(new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())));
 
-        String postData = loginParams.stream().map(nameValuePair -> nameValuePair.getName()+"="+nameValuePair.getValue()).collect(StringBuilder::new,StringBuilder::append,StringBuilder::append).toString();
+        String postData = loginParams.stream().map(nameValuePair -> nameValuePair.getName() + "=" + nameValuePair.getValue()).collect(StringBuilder::new, StringBuilder::append, StringBuilder::append).toString();
 
-        NameValuePair sig = new BasicNameValuePair("sign",getSign(postData));loginParams.add(sig);
-        HttpUriRequest request = getPostRequest("http://c.tieba.baidu.com/c/s/login",loginParams);
+        NameValuePair sig = new BasicNameValuePair("sign", getSign(postData));
+        loginParams.add(sig);
+        HttpUriRequest request = getPostRequest("http://c.tieba.baidu.com/c/s/login", loginParams);
 
-        String resp = getContent("UTF-8",client.execute(request));
+        String resp = getContent("UTF-8", client.execute(request));
 
         JSONObject respJson = JSONObject.parseObject(resp);
 
-        if("0".equals(respJson.getString("error_code"))){
+        if ("0".equals(respJson.getString("error_code"))) {
             return respJson.getJSONObject("anti").getString("tbs");
-        }else {
+        } else {
             return "登录失败";
         }
     }
 
     private String getContent(String charset, HttpResponse httpResponse) throws IOException {
-        String cc =  IOUtils.toString(httpResponse.getEntity().getContent(), charset);
+        String cc = IOUtils.toString(httpResponse.getEntity().getContent(), charset);
         httpResponse.getEntity().getContent().close();
         return cc;
     }
@@ -189,47 +193,25 @@ public class SignService {
         if (param != null) {
             param.forEach(requestBuilder::addParameter);
         }
-        HttpUriRequest request =  requestBuilder.build();
-        request.addHeader("Accept-Encoding","gzip");
-        request.addHeader("Cookie","ka=open");
-        request.addHeader("net","3");
-        request.addHeader("Content-Type","application/x-www-form-urlencoded");
-        request.addHeader("Pragma","no-cache");
+        HttpUriRequest request = requestBuilder.build();
+        request.addHeader("Accept-Encoding", "gzip");
+        request.addHeader("Cookie", "ka=open");
+        request.addHeader("net", "3");
+        request.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.addHeader("Pragma", "no-cache");
         return request;
     }
 
 
     /**
      * 计算uwp版的提交sign,需要bduss
+     *
      * @return
      */
-    private String getSign(String postData) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        String originalSign = postData.replaceAll("&","").concat("tiebaclient!!!");
+    private String getSign(String postData) {
+        String originalSign = postData.replaceAll("&", "").concat("tiebaclient!!!");
         DigestUtils.md5(originalSign);
         return byteToString(DigestUtils.md5(originalSign));
     }
 
-    private final String[] strDigits = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
-
-
-    private String byteToArrayString(byte bByte) {
-        int iRet = bByte;
-        if(bByte < 0) {
-            iRet = bByte + 256;
-        }
-
-        int iD1 = iRet / 16;
-        int iD2 = iRet % 16;
-        return strDigits[iD1] + strDigits[iD2];
-    }
-
-    private String byteToString(byte[] bByte) {
-        StringBuffer sBuffer = new StringBuffer();
-
-        for(int i = 0; i < bByte.length; ++i) {
-            sBuffer.append(byteToArrayString(bByte[i]));
-        }
-
-        return sBuffer.toString();
-    }
 }

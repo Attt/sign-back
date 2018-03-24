@@ -72,8 +72,9 @@ public class HttpUtil {
      * @return
      */
     public static CloseableHttpClient buildWebClient() {
-        HttpHost proxy = new HttpHost("127.0.0.1", 8888);
-        return HttpClientBuilder.create().setProxy(proxy).setRedirectStrategy(new DefaultRedirectStrategy()).setConnectionManager(manager).setUserAgent("Mozilla/5.0 (Wndows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36").build();
+        // 使用 fiddler 抓包
+        // HttpHost proxy = new HttpHost("127.0.0.1", 8888);
+        return HttpClientBuilder.create().setRedirectStrategy(new DefaultRedirectStrategy()).setConnectionManager(manager).setUserAgent("Mozilla/5.0 (Wndows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36").build();
     }
 
     /**
@@ -82,8 +83,9 @@ public class HttpUtil {
      * @return
      */
     public static CloseableHttpClient buildCClient() {
-        HttpHost proxy = new HttpHost("127.0.0.1", 8888);
-        return HttpClientBuilder.create().setProxy(proxy).setRedirectStrategy(new DefaultRedirectStrategy()).setConnectionManager(manager).setUserAgent("bdtb for Android 7.9.2").build();
+        // 使用 fiddler 抓包
+        // HttpHost proxy = new HttpHost("127.0.0.1", 8888);
+        return HttpClientBuilder.create().setRedirectStrategy(new DefaultRedirectStrategy()).setConnectionManager(manager).setUserAgent("bdtb for Android 7.9.2").build();
     }
 
     /**
@@ -182,13 +184,13 @@ public class HttpUtil {
             @Override
             public void checkClientTrusted(
                     java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
-                    String paramString) throws CertificateException {
+                    String paramString) {
             }
 
             @Override
             public void checkServerTrusted(
                     java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
-                    String paramString) throws CertificateException {
+                    String paramString) {
             }
 
             @Override
